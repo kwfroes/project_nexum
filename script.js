@@ -113,6 +113,45 @@ function finish(){
   document.getElementById('prog').style.width='100%';
 }
 
+function enviarDiagnosticoWpp() {
+    const nome = document.getElementById('diag-nome').value.trim();
+    const empresa = document.getElementById('diag-empresa').value.trim();
+    const errEl = document.getElementById('e-diag');
+
+    if (!nome || !empresa) {
+        errEl.textContent = 'Preencha seu nome e empresa para continuar.';
+        return;
+    }
+
+    const { porte, perdas, dor, urgencia, descricao } = answers;
+
+    const perdaMap = {estoque:'Controle de estoque',financeiro:'Gestão financeira',demandas:'Gestão de demandas',relatorios:'Relatórios gerenciais',retrabalho:'Retrabalho operacional'};
+    const dorMap = {complexo:'Adoção pela equipe',manual:'Eficiência e automação',mobile:'Acessibilidade mobile',visibilidade:'Visibilidade para gestão',nenhum:'Digitalização completa do processo'};
+
+    const perdasLabel = (perdas || []).map(p => perdaMap[p] || p).join(', ');
+    const dorLabel = dorMap[dor] || dor;
+    const urgenciaLabel = { critico: 'Crítica — impacto imediato', breve: 'Breve — 1 a 3 meses', planejando: 'Planejamento futuro' }[urgencia] || urgencia;
+
+    const msg =
+`Olá! Acabei de fazer o diagnóstico no site da Nexum.
+
+*Nome:* ${nome}
+*Empresa:* ${empresa}
+*Porte:* ${porte} colaboradores
+
+*Principais gargalos:* ${perdasLabel}
+*Dor principal:* ${dorLabel}
+*Urgência:* ${urgenciaLabel}
+
+*O que descrevemos:* ${descricao}
+
+Gostaria de conversar sobre como resolver isso.`;
+
+    const url = `https://wa.me/55XXXXXXXXXXX?text=${encodeURIComponent(msg)}`;
+    window.open(url, '_blank');
+}
+
+
 function renderResult(){
   const {porte, perdas, dor, urgencia, descricao} = answers;
 
@@ -130,89 +169,58 @@ function renderResult(){
   const dorLabel = dorMap[dor] || dor;
   const solucoes = [...new Set((perdas||[]).map(p=>solMap[p]).filter(Boolean))];
 
+// NOVO
+  function esc(str) {
+    return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+
   document.getElementById('resultado').innerHTML = `
     ${urgTag}
     <div class="result-card">
       <h3>Principais gargalos identificados</h3>
-      <p>${perdasLabel || '—'}</p>
+      <p>${esc(perdasLabel) || '—'}</p>
     </div>
     <div class="result-card">
       <h3>Foco da solução</h3>
-      <p>${dorLabel}</p>
+      <p>${esc(dorLabel)}</p>
     </div>
     <div class="result-card">
       <h3>Sistemas que provavelmente se aplicam</h3>
-      <p>${solucoes.join('<br>') || 'A definir após diagnóstico aprofundado.'}</p>
+      <p>${solucoes.map(esc).join('<br>') || 'A definir após diagnóstico aprofundado.'}</p>
     </div>
     <div class="result-card">
       <h3>O que você descreveu</h3>
-      <p style="font-style:italic">"${descricao}"</p>
+      <p style="font-style:italic">"${esc(descricao)}"</p>
     </div>
   `;
 
-  const msg = `Olá, vim pelo diagnóstico da Nexum. Porte: ${porte}. Gargalos: ${perdasLabel}. Dor principal: ${dorLabel}. Urgência: ${urgencia}. Descrição: ${descricao}`;
-  document.getElementById('wpp-link').href = `https://wa.me/55XXXXXXXXXXX?text=${encodeURIComponent(msg)}`;
+
 }
 
-// ====== CONTROLE DO MODAL DE MOCKUP ======
+// NOVO — versão limpa, sem duplicata
+// ====== CONTROLE DOS MODAIS DE MOCKUP ======
 function abrirModalMockup(tipoApp) {
-    const modal = document.getElementById('modal-mockup');
-    modal.classList.add('active');
-    
-    // Atualiza os ícones Lucide recém renderizados no modal
-    lucide.createIcons();
-    
-    // Trava a rolagem da página por trás do modal
-    document.body.style.overflow = 'hidden'; 
-}
-
-function fecharModalMockup() {
-    const modal = document.getElementById('modal-mockup');
-    modal.classList.remove('active');
-    
-    // Destrava a rolagem da página
-    document.body.style.overflow = ''; 
-}
-
-// Fechar o modal se o usuário clicar fora da caixa central
-document.getElementById('modal-mockup').addEventListener('click', (e) => {
-    if (e.target === e.currentTarget) {
-        fecharModalMockup();
-    }
-});
-
-// ====== CONTROLE DO MODAL DE MOCKUP ======
-function abrirModalMockup(tipoApp) {
-    // Busca o modal com base no parâmetro (ex: modal-mockup-demandas ou modal-mockup-estoque)
     const modal = document.getElementById(`modal-mockup-${tipoApp}`);
-    
-    if (modal) {
-        modal.classList.add('active');
-        
-        // Atualiza os ícones Lucide no modal recém aberto
-        lucide.createIcons();
-        
-        // Trava a rolagem da página por trás do modal
-        document.body.style.overflow = 'hidden'; 
-    }
+    if (!modal) return;
+    modal.classList.add('active');
+    lucide.createIcons();
+    document.body.style.overflow = 'hidden';
 }
 
 function fecharModalMockup() {
-    // Encontra todos os modais que estão com a classe active e fecha
-    const modaisAtivos = document.querySelectorAll('.modal-overlay.active');
-    modaisAtivos.forEach(modal => {
+    document.querySelectorAll('.modal-overlay.active').forEach(modal => {
         modal.classList.remove('active');
     });
-    
-    // Destrava a rolagem da página
-    document.body.style.overflow = ''; 
+    document.body.style.overflow = '';
 }
 
-// Fechar o modal se o usuário clicar fora da caixa central em QUALQUER um deles
 document.querySelectorAll('.modal-overlay').forEach(overlay => {
     overlay.addEventListener('click', (e) => {
-        if (e.target === e.currentTarget) {
-            fecharModalMockup();
-        }
+        if (e.target === e.currentTarget) fecharModalMockup();
     });
+});
+
+// Fechar modais com Esc
+document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') fecharModalMockup();
 });

@@ -185,8 +185,37 @@ body {
     margin-top: 8px;
     border: none;
 }
+
+
 .btn-whatsapp:hover {
     box-shadow: 0 0 15px rgba(37, 211, 102, 0.4);
+}
+
+/* Bloco de contato inline no diagnóstico */
+.diagnostico-contato {
+    margin-top: 32px;
+    padding-top: 28px;
+    border-top: 1px solid var(--border-color);
+}
+
+.diagnostico-contato-titulo {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 20px;
+}
+
+.diagnostico-contato-campos {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 20px;
+}
+
+@media (max-width: 600px) {
+    .diagnostico-contato-campos {
+        grid-template-columns: 1fr;
+    }
 }
 
 /* Hero Section */
