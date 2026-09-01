@@ -8,6 +8,22 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest"></script>
+
+    <script>
+        (function () {
+            const storageKey = 'nexum-theme';
+            const savedTheme = localStorage.getItem(storageKey);
+
+            const theme = savedTheme === 'light' || savedTheme === 'dark'
+                ? savedTheme
+                : window.matchMedia('(prefers-color-scheme: dark)').matches
+                    ? 'dark'
+                    : 'light';
+
+            document.documentElement.dataset.theme = theme;
+        })();
+    </script>
+
     <link rel="stylesheet" href="style.css">
     <link rel="apple-touch-icon" sizes="180x180" href="/favicon_io/apple-touch-icon.png">
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon_io/favicon-32x32.png">
@@ -25,6 +41,17 @@
                 <a href="#problemas">O Gap</a>
                 <a href="#processo">Como Funciona</a>
                 <a href="#solucoes">Soluções</a>
+                <button
+                    type="button"
+                    class="theme-toggle"
+                    id="theme-toggle"
+                    aria-label="Ativar tema escuro"
+                    title="Alternar tema"
+                    >
+                    <i data-lucide="moon" class="theme-icon-moon"></i>
+                    <i data-lucide="sun" class="theme-icon-sun"></i>
+                
+                </button>
                 <a href="#contato" class="btn btn-outline">Falar com Consultor</a>
             </div>
         </div>
@@ -157,9 +184,9 @@
                 </div>
                 
             </div>
-            <div class="solucoes-escape">
+            <div class="solucoes-escape reveal">
                 <p>Nenhum desses se encaixa no seu problema?</p>
-                <a href="#contato" class="btn btn-ghost">Conta pra gente o que acontece na sua operação →</a>
+                <a href="#contato" class="btn btn-primary">Conta pra gente o que acontece na sua operação →</a>
             </div>
         </div>
     </section>
@@ -332,125 +359,327 @@
                     <i data-lucide="x"></i>
                 </button>
             </div>
-            
+
             <div class="modal-body custom-scrollbar">
                 <p style="color: var(--text-secondary); margin-bottom: 20px; font-size: 0.95rem;">Passe o mouse sobre os pontos em destaque para ver como eliminamos o "empurra-empurra" operacional.</p>
-                
-                <!-- Casca do App Enriquecida -->
-                <div class="app-mockup">
-                    <div class="app-header">
-                        <div class="app-title">
-                            <h4>Demandas da Operação</h4>
-                            <p>Controle centralizado em tempo real</p>
-                        </div>
-                        <div class="app-search-fake">Filtrar por setor, colaborador...</div>
-                        <div class="btn-primary" style="padding: 6px 16px; font-size: 0.8rem; border-radius: 6px;">+ Nova Demanda</div>
-                    </div>
 
-                    <!-- Nova Barra de Filtros simulada para dar corpo -->
-                    <div style="background: var(--bg-main); padding: 10px 24px; border-bottom: 1px solid var(--border-color); display: flex; gap: 10px; align-items: center; font-size: 0.75rem; color: var(--text-secondary);">
-                        <span style="color: var(--text-primary); font-weight: 600;">Filtros:</span>
-                        <span style="background: var(--bg-card); padding: 4px 8px; border-radius: 4px; border: 1px solid var(--border-color);">Status: Ativas ▼</span>
-                        <span style="background: var(--bg-card); padding: 4px 8px; border-radius: 4px; border: 1px solid var(--border-color);">Prioridade: Todas ▼</span>
-                        <span style="margin-left: auto; color: var(--accent-green); font-weight: 600;">● Sincronizado ao vivo</span>
-                    </div>
+                <div class="app-mockup mockup-theme-dark">
 
-                    <div class="app-body">
-                        <!-- Card 1 (Atrasado + Botão Dar Ciente) -->
-                        <div class="app-card border-red">
-                            <div class="card-top">
-                                <span class="tag-status bg-red">Pendente (Aguardando Ciente)</span>
-                                <span class="tag-prio text-red">Urgente</span>
-                            </div>
-                            <h5>Fechamento Financeiro Mensal</h5>
-                            <p class="card-desc">Conciliação bancária das contas principais e envio para a contabilidade.</p>
+                <!-- HEADER do app (Gestor de Demandas) -->
+                <div class="app-header">
+                    <div class="app-title">
+                        <h4>Demandas da Operação</h4>
+                        <p>Controle centralizado em tempo real</p>
+                    </div>
+                    
+                    <div class="app-search-fake">Filtrar por setor, colaborador...</div>
+                    
+                    <!-- CONTEINER FLEX: Força os botões a ficarem lado a lado (horizontalmente) -->
+                    <div style="display: flex; flex-direction: row; align-items: center; gap: 12px; position: relative;">
+                        
+                        <!-- BOTÃO DE TEMA (Lado Esquerdo) -->
+                        <button type="button" class="mockup-theme-btn pulse-alert" onclick="toggleMockupTheme(this)" title="Alternar tema da interface">
+                            <i data-lucide="moon" class="m-moon"></i>
+                            <i data-lucide="sun" class="m-sun"></i>
+                        </button>
+
+                        <!-- BOTÃO NOVA DEMANDA COM HOTSPOT (Lado Direito) -->
+                        <div class="relative">
+                            <div class="btn-primary" style="padding: 6px 16px; font-size: 0.8rem; border-radius: 6px; cursor: default; white-space: nowrap;">+ Nova Demanda</div>
                             
-                            <div class="card-bottom">
-                                <div class="resp-box">
-                                    <span class="resp-label">Responsável</span>
-                                    <span class="resp-name">João Silva</span>
-                                    
-                                    <div class="hotspot" style="top: -10px; right: -20px;">
+                            <div class="hotspot" style="top: -8px; right: -8px;">
+                                <div class="pulse"></div>
+                                <div class="tooltip tooltip-bottom" style="left: -160px; width: 240px;">
+                                    <strong>Abertura em Segundos</strong><br>
+                                    Qualquer colaborador abre uma demanda pelo celular ou desktop — sem e-mail, sem formulário de papel.
+                                </div>
+                            </div>
+                        </div>
+                        
+                    </div>
+                </div>
+
+                    <!-- ABAS DE NAVEGAÇÃO -->
+                    <div style="background: var(--bg-main); padding: 0 24px; border-bottom: 1px solid var(--border-color); display: flex; gap: 0; align-items: center;">
+                        <button type="button" class="demandas-tab active" data-demandas-tab="kanban">
+                            <i data-lucide="layout-dashboard" style="width: 14px; vertical-align: middle; margin-right: 5px;"></i>Kanban
+                        </button>
+                        <button type="button" class="demandas-tab" data-demandas-tab="minhas">
+                            <i data-lucide="user-check" style="width: 14px; vertical-align: middle; margin-right: 5px;"></i>Minhas Tarefas
+                        </button>
+                        <button type="button" class="demandas-tab" data-demandas-tab="historico">
+                            <i data-lucide="history" style="width: 14px; vertical-align: middle; margin-right: 5px;"></i>Histórico
+                        </button>
+                        <span style="margin-left: auto; font-size: 0.72rem; color: var(--accent-secondary); font-weight: 600; padding-right: 4px;">● Sincronizado ao vivo</span>
+                    </div>
+
+                    <!-- ================================================
+                        ABA 1: KANBAN
+                    ================================================ -->
+                    <div class="demandas-panel active" data-demandas-panel="kanban">
+
+                        <!-- Barra de filtros -->
+                        <div style="background: var(--bg-main); padding: 10px 24px; border-bottom: 1px solid var(--border-color); display: flex; gap: 10px; align-items: center; font-size: 0.75rem; color: var(--text-secondary);">
+                            <span style="color: var(--text-primary); font-weight: 600;">Filtros:</span>
+                            <span style="background: var(--bg-card); padding: 4px 8px; border-radius: 4px; border: 1px solid var(--border-color);">Status: Ativas ▼</span>
+                            <span style="background: var(--bg-card); padding: 4px 8px; border-radius: 4px; border: 1px solid var(--border-color);">Prioridade: Todas ▼</span>
+                            <span style="background: var(--bg-card); padding: 4px 8px; border-radius: 4px; border: 1px solid var(--border-color);">Setor: Todos ▼</span>
+                        </div>
+
+                        <div class="app-body">
+
+                            <!-- Card 1: Atrasado -->
+                            <div class="app-card border-red">
+                                <div class="card-top">
+                                    <span class="tag-status bg-red">Aguardando Ciente</span>
+                                    <span class="tag-prio text-red">Urgente</span>
+                                </div>
+                                <h5>Fechamento Financeiro Mensal</h5>
+                                <p class="card-desc">Conciliação bancária das contas principais e envio para a contabilidade.</p>
+                                <div class="card-bottom">
+                                    <div class="resp-box relative">
+                                        <span class="resp-label">Responsável</span>
+                                        <span class="resp-name">João Silva</span>
+                                        <div class="hotspot" style="top: -10px; right: -20px;">
+                                            <div class="pulse"></div>
+                                            <div class="tooltip">
+                                                <strong>O Fim do "Eu não sabia"</strong><br>
+                                                O sistema exige que o colaborador dê o "Ciente". Se não iniciar, o gestor é alertado na hora.
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <span class="prazo text-red">Atrasado: Ontem</span>
+                                </div>
+                            </div>
+
+                            <!-- Card 2: Em andamento + progresso -->
+                            <div class="app-card border-blue">
+                                <div class="card-top">
+                                    <span class="tag-status bg-blue">Em Andamento</span>
+                                    <span class="tag-prio text-blue">Média</span>
+                                </div>
+                                <h5>Reposição de Estoque — Galpão B</h5>
+                                <p class="card-desc">Conferência de itens faltantes e emissão de ordem de compra.</p>
+                                <div style="margin: 10px 0 16px 0;">
+                                    <div style="display: flex; justify-content: space-between; font-size: 0.7rem; color: var(--text-secondary); margin-bottom: 4px;">
+                                        <span>Progresso das Etapas</span>
+                                        <span style="color: var(--accent-secondary); font-weight: bold;">3 de 4 concluídas</span>
+                                    </div>
+                                    <div style="width: 100%; height: 6px; background: var(--bg-main); border-radius: 3px; overflow: hidden;">
+                                        <div style="width: 75%; height: 100%; background: var(--accent-secondary); border-radius: 3px;"></div>
+                                    </div>
+                                </div>
+                                <div class="card-bottom relative">
+                                    <div class="resp-box">
+                                        <span class="resp-label">Responsável</span>
+                                        <span class="resp-name">Maria Souza</span>
+                                    </div>
+                                    <span class="prazo text-slate">Prazo: 24/Out</span>
+                                    <div class="hotspot" style="top: -40px; right: 40px;">
                                         <div class="pulse"></div>
                                         <div class="tooltip">
-                                            <strong>O Fim do "Eu não sabia"</strong><br>
-                                            O sistema exige que o colaborador dê o "Ciente". Se ele não iniciar, o gestor é alertado na hora.
+                                            <strong>Visibilidade sem Cobrança Chata</strong><br>
+                                            Acompanhe o avanço por micro-etapas visuais, sem reuniões de status diárias.
                                         </div>
                                     </div>
                                 </div>
-                                <span class="prazo text-red">Atrasado: Ontem</span>
                             </div>
+
+                            <!-- Card 3: Recorrente + subtarefas -->
+                            <div class="app-card border-slate">
+                                <div class="card-top">
+                                    <span class="tag-status bg-slate">Planejado</span>
+                                    <span class="tag-prio text-orange">Recorrente</span>
+                                </div>
+                                <h5>Integração de Novo Funcionário</h5>
+                                <div class="sub-tasks-fake relative">
+                                    <div class="sub-task"><div class="check done"></div> Criar e-mail corporativo</div>
+                                    <div class="sub-task"><div class="check done"></div> Entrega de EPIs</div>
+                                    <div class="sub-task"><div class="check"></div> Cadastro no Ponto</div>
+                                    <div class="hotspot" style="top: 10px; right: -10px;">
+                                        <div class="pulse"></div>
+                                        <div class="tooltip" style="left: -120px;">
+                                            <strong>Demandas Recorrentes Automáticas</strong><br>
+                                            O sistema gera tarefas mensais, semanais ou rotineiras sozinho — ninguém esquece rotinas críticas.
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="card-bottom mt-top">
+                                    <div class="resp-box">
+                                        <span class="resp-label">Responsável</span>
+                                        <span class="resp-name">Automação RH</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div><!-- /app-body -->
+                    </div><!-- /kanban panel -->
+
+                    <!-- ================================================
+                        ABA 2: MINHAS TAREFAS
+                    ================================================ -->
+                    <div class="demandas-panel" data-demandas-panel="minhas">
+                        <div style="padding: 20px 24px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); background: var(--bg-main);">
+                            <div>
+                                <span style="font-size: 0.78rem; color: var(--text-secondary);">Logado como</span>
+                                <div style="font-size: 0.95rem; font-weight: 700; color: var(--text-primary);">João Silva — Financeiro</div>
+                            </div>
+                            <span style="font-size: 0.72rem; background: var(--bg-danger); color: var(--text-danger); padding: 4px 10px; border-radius: 20px; font-weight: 700;">2 pendentes</span>
                         </div>
 
-                        <!-- Card 2 (Em andamento com métrica de progresso) -->
-                        <div class="app-card border-blue">
-                            <div class="card-top">
-                                <span class="tag-status bg-blue">Em Andamento</span>
-                                <span class="tag-prio text-blue">Média</span>
-                            </div>
-                            <h5>Reposição de Estoque - Galpão B</h5>
-                            <p class="card-desc">Conferência de itens faltantes e emissão de ordem de compra.</p>
-                            
-                            <!-- Mini barra de progresso para dar cara de sistema profissional -->
-                            <div style="margin: 10px 0 16px 0;">
-                                <div style="display: flex; justify-content: space-between; font-size: 0.7rem; color: var(--text-secondary); margin-bottom: 4px;">
-                                    <span>Progresso das Etapas</span>
-                                    <span style="color: var(--accent-green); font-weight: bold;">3 de 4 concluídas</span>
+                        <div style="padding: 20px 24px; display: flex; flex-direction: column; gap: 12px;">
+
+                            <!-- Tarefa atrasada -->
+                            <div style="background: var(--bg-card); border: 1px solid var(--border-color); border-left: 3px solid #EF4444; border-radius: 10px; padding: 16px; position: relative;">
+                                <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px;">
+                                    <span style="font-size: 0.88rem; font-weight: 700; color: var(--text-primary);">Fechamento Financeiro Mensal</span>
+                                    <span style="font-size: 0.68rem; background: var(--bg-danger); color: var(--text-danger); padding: 3px 8px; border-radius: 4px; font-weight: 700; white-space: nowrap; margin-left: 8px;">Atrasado</span>
                                 </div>
-                                <div style="width: 100%; height: 6px; background: var(--bg-main); border-radius: 3px; overflow: hidden;">
-                                    <div style="width: 75%; height: 100%; background: var(--accent-green); border-radius: 3px;"></div>
+                                <p style="font-size: 0.78rem; color: var(--text-secondary); margin-bottom: 12px; line-height: 1.4;">Conciliação bancária das contas principais e envio para a contabilidade.</p>
+                                <div style="display: flex; justify-content: space-between; align-items: center;">
+                                    <span style="font-size: 0.68rem; color: var(--text-muted);">Prazo: Ontem</span>
+                                    <div style="display: flex; gap: 8px;">
+                                        <div style="padding: 6px 12px; background: var(--accent-secondary); color: #fff; border-radius: 6px; font-size: 0.72rem; font-weight: 700; cursor: default;">Dar Ciente</div>
+                                        <div style="padding: 6px 12px; background: var(--surface-2); color: var(--text-primary); border: 1px solid var(--border-color); border-radius: 6px; font-size: 0.72rem; font-weight: 600; cursor: default;">Iniciar</div>
+                                    </div>
+                                </div>
+                                <div class="hotspot" style="top: 16px; right: 100px;">
+                                    <div class="pulse"></div>
+                                    <div class="tooltip tooltip-bottom" style="left: -80px; width: 230px;">
+                                        <strong>Ação Direta na Tarefa</strong><br>
+                                        O colaborador dá ciência e inicia sem sair da tela. O gestor vê a mudança de status em tempo real.
+                                    </div>
                                 </div>
                             </div>
 
-                            <div class="card-bottom relative">
-                                <div class="resp-box">
-                                    <span class="resp-label">Responsável</span>
-                                    <span class="resp-name">Maria Souza</span>
+                            <!-- Tarefa em andamento -->
+                            <div style="background: var(--bg-card); border: 1px solid var(--border-color); border-left: 3px solid #3B82F6; border-radius: 10px; padding: 16px;">
+                                <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px;">
+                                    <span style="font-size: 0.88rem; font-weight: 700; color: var(--text-primary);">Conferência de Caixa Diária</span>
+                                    <span style="font-size: 0.68rem; background: rgba(59,130,246,0.1); color: #3B82F6; padding: 3px 8px; border-radius: 4px; font-weight: 700; white-space: nowrap; margin-left: 8px;">Em Andamento</span>
                                 </div>
-                                <span class="prazo text-slate">Prazo: 24/Out</span>
-                                
-                                <div class="hotspot" style="top: -40px; right: 40px;">
+                                <p style="font-size: 0.78rem; color: var(--text-secondary); margin-bottom: 12px; line-height: 1.4;">Registro e batimento dos valores físicos com o sistema.</p>
+                                <div style="margin-bottom: 12px;">
+                                    <div style="display: flex; justify-content: space-between; font-size: 0.68rem; color: var(--text-secondary); margin-bottom: 4px;">
+                                        <span>Progresso</span><span style="color: var(--accent-secondary); font-weight: 700;">2 de 3 etapas</span>
+                                    </div>
+                                    <div style="width: 100%; height: 5px; background: var(--bg-main); border-radius: 3px; overflow: hidden;">
+                                        <div style="width: 66%; height: 100%; background: var(--accent-secondary); border-radius: 3px;"></div>
+                                    </div>
+                                </div>
+                                <div style="display: flex; justify-content: space-between; align-items: center;">
+                                    <span style="font-size: 0.68rem; color: var(--text-muted);">Prazo: Hoje às 18h</span>
+                                    <div style="padding: 6px 12px; background: var(--surface-2); color: var(--text-primary); border: 1px solid var(--border-color); border-radius: 6px; font-size: 0.72rem; font-weight: 600; cursor: default;">Concluir</div>
+                                </div>
+                            </div>
+
+                            <!-- Tarefa futura -->
+                            <div style="background: var(--bg-card); border: 1px solid var(--border-color); border-left: 3px solid #94A3B8; border-radius: 10px; padding: 16px; opacity: 0.7;">
+                                <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px;">
+                                    <span style="font-size: 0.88rem; font-weight: 700; color: var(--text-primary);">Relatório Semanal de Despesas</span>
+                                    <span style="font-size: 0.68rem; background: var(--surface-2); color: var(--text-secondary); padding: 3px 8px; border-radius: 4px; font-weight: 700; white-space: nowrap; margin-left: 8px;">Planejado</span>
+                                </div>
+                                <p style="font-size: 0.78rem; color: var(--text-secondary); line-height: 1.4;">Compilar e enviar o resumo de gastos da semana para a diretoria.</p>
+                                <div style="margin-top: 12px;">
+                                    <span style="font-size: 0.68rem; color: var(--text-muted);">Disponível em: Sexta-feira</span>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div><!-- /minhas panel -->
+
+                    <!-- ================================================
+                        ABA 3: HISTÓRICO
+                    ================================================ -->
+                    <div class="demandas-panel" data-demandas-panel="historico">
+
+                        <div style="padding: 16px 24px; background: var(--bg-main); border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center;">
+                            <span style="font-size: 0.82rem; font-weight: 600; color: var(--text-primary);">Log de Atividades — Últimos 7 dias</span>
+                            <div class="relative" style="display: flex; align-items: center; gap: 6px; font-size: 0.75rem; color: var(--text-secondary); background: var(--bg-card); border: 1px solid var(--border-color); padding: 6px 12px; border-radius: 6px; cursor: default;">
+                                <i data-lucide="download" style="width: 13px;"></i> Exportar CSV
+                                <div class="hotspot" style="top: -8px; right: -8px;">
                                     <div class="pulse"></div>
-                                    <div class="tooltip">
-                                        <strong>Visibilidade Total sem Cobrança Chata</strong><br>
-                                        Acompanhe o avanço de cada projeto através de micro-passos visuais, sem precisar fazer reuniões de status diárias.
+                                    <div class="tooltip" style="left: -150px; width: 230px;">
+                                        <strong>Auditoria Exportável</strong><br>
+                                        Todo o histórico pode ser exportado para Excel ou PDF — útil para auditorias, reuniões e relatórios gerenciais.
                                     </div>
                                 </div>
                             </div>
                         </div>
 
-                        <!-- Card 3 (Estrutura de Subdemandas e Automação) -->
-                        <div class="app-card border-slate">
-                            <div class="card-top">
-                                <span class="tag-status bg-slate">Planejado</span>
-                                <span class="tag-prio text-orange">Recorrente</span>
+                        <div style="padding: 8px 24px 24px; display: flex; flex-direction: column;">
+
+                            <!-- Entrada de log 1 -->
+                            <div style="display: flex; gap: 14px; padding: 14px 0; border-bottom: 1px solid var(--border-color); align-items: flex-start; position: relative;">
+                                <div style="width: 32px; height: 32px; border-radius: 8px; background: var(--bg-success); display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 2px;">
+                                    <i data-lucide="check-circle-2" style="width: 15px; color: var(--text-success);"></i>
+                                </div>
+                                <div style="flex: 1;">
+                                    <div style="font-size: 0.82rem; font-weight: 700; color: var(--text-primary); margin-bottom: 2px;">Conferência de Caixa Diária <span style="font-weight: 400; color: var(--text-secondary);">concluída</span></div>
+                                    <div style="font-size: 0.72rem; color: var(--text-secondary);">por João Silva · Hoje às 17:52</div>
+                                </div>
+                                <span style="font-size: 0.65rem; color: var(--text-success); font-weight: 700; white-space: nowrap;">Concluída</span>
                             </div>
-                            <h5>Integração de Novo Funcionário</h5>
-                            
-                            <div class="sub-tasks-fake">
-                                <div class="sub-task"><div class="check done"></div> Criar e-mail corporativo</div>
-                                <div class="sub-task"><div class="check done"></div> Entrega de EPIs</div>
-                                <div class="sub-task"><div class="check"></div> Cadastro no Ponto</div>
-                                
-                                <div class="hotspot" style="top: 10px; right: -10px;">
+
+                            <!-- Entrada de log 2 -->
+                            <div style="display: flex; gap: 14px; padding: 14px 0; border-bottom: 1px solid var(--border-color); align-items: flex-start; position: relative;">
+                                <div style="width: 32px; height: 32px; border-radius: 8px; background: rgba(59,130,246,0.1); display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 2px;">
+                                    <i data-lucide="play-circle" style="width: 15px; color: #3B82F6;"></i>
+                                </div>
+                                <div style="flex: 1;">
+                                    <div style="font-size: 0.82rem; font-weight: 700; color: var(--text-primary); margin-bottom: 2px;">Reposição de Estoque — Galpão B <span style="font-weight: 400; color: var(--text-secondary);">iniciada</span></div>
+                                    <div style="font-size: 0.72rem; color: var(--text-secondary);">por Maria Souza · Hoje às 09:14</div>
+                                </div>
+                                <span style="font-size: 0.65rem; color: #3B82F6; font-weight: 700; white-space: nowrap;">Em Andamento</span>
+                            </div>
+
+                            <!-- Entrada de log 3 com hotspot -->
+                            <div style="display: flex; gap: 14px; padding: 14px 0; border-bottom: 1px solid var(--border-color); align-items: flex-start; position: relative;">
+                                <div style="width: 32px; height: 32px; border-radius: 8px; background: var(--bg-warning); display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 2px;">
+                                    <i data-lucide="bell" style="width: 15px; color: var(--text-warning);"></i>
+                                </div>
+                                <div style="flex: 1;">
+                                    <div style="font-size: 0.82rem; font-weight: 700; color: var(--text-primary); margin-bottom: 2px;">Alerta disparado <span style="font-weight: 400; color: var(--text-secondary);">— Fechamento Financeiro sem ciente há 24h</span></div>
+                                    <div style="font-size: 0.72rem; color: var(--text-secondary);">Sistema → Carlos Mendes (Gestor) · Ontem às 08:00</div>
+                                </div>
+                                <div class="hotspot" style="top: 18px; right: 0;">
                                     <div class="pulse"></div>
-                                    <div class="tooltip" style="left: -120px;">
-                                        <strong>Demandas Recorrentes Automáticas</strong><br>
-                                        O sistema gera sozinho tarefas mensais, semanais ou rotineiras, impedindo que o operacional esqueça rotinas críticas.
+                                    <div class="tooltip" style="left: -170px; width: 230px;">
+                                        <strong>Alertas Automáticos</strong><br>
+                                        O sistema detecta inércia e notifica o gestor sem que ninguém precise cobrar manualmente.
                                     </div>
                                 </div>
                             </div>
 
-                            <div class="card-bottom mt-top">
-                                <div class="resp-box">
-                                    <span class="resp-label">Responsável</span>
-                                    <span class="resp-name">Automação RH</span>
+                            <!-- Entrada de log 4 -->
+                            <div style="display: flex; gap: 14px; padding: 14px 0; border-bottom: 1px solid var(--border-color); align-items: flex-start;">
+                                <div style="width: 32px; height: 32px; border-radius: 8px; background: var(--bg-success); display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 2px;">
+                                    <i data-lucide="check-circle-2" style="width: 15px; color: var(--text-success);"></i>
+                                </div>
+                                <div style="flex: 1;">
+                                    <div style="font-size: 0.82rem; font-weight: 700; color: var(--text-primary); margin-bottom: 2px;">Integração de Novo Funcionário <span style="font-weight: 400; color: var(--text-secondary);">concluída</span></div>
+                                    <div style="font-size: 0.72rem; color: var(--text-secondary);">por Automação RH · Ontem às 14:30</div>
+                                </div>
+                                <span style="font-size: 0.65rem; color: var(--text-success); font-weight: 700; white-space: nowrap;">Concluída</span>
+                            </div>
+
+                            <!-- Entrada de log 5 -->
+                            <div style="display: flex; gap: 14px; padding: 14px 0; align-items: flex-start;">
+                                <div style="width: 32px; height: 32px; border-radius: 8px; background: var(--surface-2); display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 2px;">
+                                    <i data-lucide="plus-circle" style="width: 15px; color: var(--text-secondary);"></i>
+                                </div>
+                                <div style="flex: 1;">
+                                    <div style="font-size: 0.82rem; font-weight: 700; color: var(--text-primary); margin-bottom: 2px;">Relatório Semanal de Despesas <span style="font-weight: 400; color: var(--text-secondary);">criada automaticamente</span></div>
+                                    <div style="font-size: 0.72rem; color: var(--text-secondary);">Sistema (Recorrência) · Ontem às 00:00</div>
                                 </div>
                             </div>
+
                         </div>
-                    </div>
-                </div>
-            </div>
+                    </div><!-- /historico panel -->
+
+                </div><!-- /app-mockup -->
+            </div><!-- /modal-body -->
+
             <div class="modal-footer">
                 <a href="#contato" class="btn btn-primary btn-full" onclick="fecharModalMockup()" style="display: block; text-decoration: none;">Quero agendar um diagnóstico da minha operação</a>
             </div>
@@ -474,177 +703,281 @@
                 
                 <!-- Casca do App Mobile -->
                 <div class="mobile-mockup-container">
-                    <div class="mobile-device">
-                        <div class="mobile-notch"></div>
-                        
-                        <!-- Header -->
-                        <div class="mobile-header" style="padding: 32px 20px 16px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #E2E8F0;">
-                            <div class="user-profile" style="display: flex; align-items: center; gap: 10px;">
-                                <div class="avatar" style="width: 32px; height: 32px; background: var(--accent-green); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #050810; font-weight: bold; font-size: 12px;">JM</div>
-                                <div style="display: flex; flex-direction: column;">
-                                    <span style="font-size: 0.7rem; color: #64748B;">Almoxarifado</span>
-                                    <span style="font-weight: 600; font-size: 0.9rem; color: #0F172A;">Central - Matriz</span>
-                                </div>
-                            </div>
-                            <div class="relative">
-                                <div class="notification-bell relative" style="margin-right: 8px;">
-                                    <i data-lucide="bell" style="width: 20px; color: #475569;"></i>
-                                    <span style="position: absolute; top: -2px; right: -2px; width: 8px; height: 8px; background: #EF4444; border-radius: 50%;"></span>
-                                </div>
+                <div class="mobile-device mockup-theme-dark">
+                    <div class="mobile-notch"></div>
+                    
+                    <!-- Header do App -->
+                    <div class="mobile-header" style="padding: 32px 20px 16px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color);">
+                        <div class="user-profile" style="display: flex; align-items: center; gap: 10px;">
+                            <div class="avatar" style="width: 32px; height: 32px; background: var(--accent-green); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #050810; font-weight: bold; font-size: 12px;">JM</div>
+                            <div style="display: flex; flex-direction: column;">
+                                <span style="font-size: 0.7rem; color: var(--text-secondary);">Almoxarifado</span>
+                                <span style="font-weight: 600; font-size: 0.9rem; color: var(--text-primary);">Central - Matriz</span>
                             </div>
                         </div>
+                        <div class="relative" style="display: flex; align-items: center; gap: 12px;">
+                            <!-- BOTÃO DE TEMA (COM PULSE ALERT) -->
+                            <button type="button" class="mockup-theme-btn pulse-alert" style="border: none;" onclick="toggleMockupTheme(this)" title="Modo Noturno">
+                                <i data-lucide="moon" class="m-moon"></i>
+                                <i data-lucide="sun" class="m-sun"></i>
+                            </button>
 
-                        <!-- Área principal do App -->
-                        <div class="mobile-scrollable-area" style="padding: 16px; padding-bottom: 80px;">
+                            <div class="notification-bell relative">
+                                <i data-lucide="bell" style="width: 20px; color: var(--text-secondary);"></i>
+                                <span style="position: absolute; top: -2px; right: -2px; width: 8px; height: 8px; background: var(--text-danger); border-radius: 50%;"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Área com Rolagem Interna das Telas -->
+                    <div class="mobile-scrollable-area" style="padding: 16px; padding-bottom: 80px; overflow-y: auto; flex: 1;">
+                        
+                        <!-- TELA 1: INÍCIO -->
+                        <div class="mobile-screen active" data-mobile-screen="inicio">
                             
-                            <!-- Barra de Busca -->
-                            <div class="search-bar relative" style="background: #F1F5F9; border-radius: 12px; padding: 10px 16px; display: flex; align-items: center; gap: 10px; margin-bottom: 20px;">
-                                <i data-lucide="search" style="width: 16px; color: #94A3B8;"></i>
-                                <span style="color: #94A3B8; font-size: 0.85rem;">Buscar produto, lote...</span>
-                                <i data-lucide="scan-line" style="width: 18px; color: var(--accent-green); margin-left: auto;"></i>
+                            <div class="search-bar relative" style="background: var(--surface-2); border-radius: 12px; padding: 10px 14px; display: flex; align-items: center; gap: 10px; margin-bottom: 18px;">
+                                <i data-lucide="search" style="width: 16px; color: var(--text-muted);"></i>
+                                <span style="color: var(--text-muted); font-size: 0.82rem;">Buscar produto, lote, QR...</span>
                                 
-                                <!-- HOTSPOT 1 (Leitor) -->
-                                <div class="hotspot" style="top: 50%; right: 10px; transform: translateY(-50%);">
-                                    <div class="pulse"></div>
-                                    <div class="tooltip" style="left: -160px; width: 200px;">
-                                        <strong>Leitura Ágil</strong><br>
-                                        Acesse a câmera direto da busca para bipar códigos de barras em segundos.
+                                <div class="relative" style="margin-left: auto; display: flex; align-items: center;">
+                                    <i data-lucide="scan-line" style="width: 20px; color: var(--accent-green);"></i>
+                                    <div class="hotspot" style="top: -4px; right: -4px;">
+                                        <div class="pulse"></div>
+                                        <div class="tooltip tooltip-bottom tooltip-phone-right" style="top: 140%;">
+                                            <strong>Bipagem & Rastreio de Lote</strong><br>
+                                            Aponte a câmera para a etiqueta: o sistema identifica lote, validade e saldo na hora.
+                                        </div>
                                     </div>
                                 </div>
                             </div>
 
                             <!-- Cards de Resumo -->
-                            <div class="kpi-cards" style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 24px;">
-                                <div style="background: #FFF0F2; border: 1px solid #FFE4E6; border-radius: 12px; padding: 12px;">
-                                    <i data-lucide="alert-triangle" style="width: 16px; color: #E11D48; margin-bottom: 8px;"></i>
-                                    <div style="font-size: 1.2rem; font-weight: 700; color: #BE123C;">12</div>
-                                    <div style="font-size: 0.7rem; color: #9F1239;">Itens em falta</div>
+                            <div class="kpi-cards" style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 18px;">
+                                <div style="background: var(--bg-danger); border: 1px solid var(--border-color); border-radius: 12px; padding: 12px;">
+                                    <i data-lucide="alert-triangle" style="width: 16px; color: var(--text-danger); margin-bottom: 6px;"></i>
+                                    <div style="font-size: 1.2rem; font-weight: 700; color: var(--text-danger);">12</div>
+                                    <div style="font-size: 0.68rem; color: var(--text-danger); opacity: 0.8;">Itens no estoque mínimo</div>
                                 </div>
-                                <div style="background: #F0FDF4; border: 1px solid #DCFCE7; border-radius: 12px; padding: 12px;">
-                                    <i data-lucide="check-circle-2" style="width: 16px; color: #16A34A; margin-bottom: 8px;"></i>
-                                    <div style="font-size: 1.2rem; font-weight: 700; color: #15803D;">48</div>
-                                    <div style="font-size: 0.7rem; color: #166534;">Entregas hoje</div>
+                                <div style="background: var(--bg-success); border: 1px solid var(--border-color); border-radius: 12px; padding: 12px;">
+                                    <i data-lucide="check-circle-2" style="width: 16px; color: var(--text-success); margin-bottom: 6px;"></i>
+                                    <div style="font-size: 1.2rem; font-weight: 700; color: var(--text-success);">48</div>
+                                    <div style="font-size: 0.68rem; color: var(--text-success); opacity: 0.8;">Movimentações hoje</div>
                                 </div>
                             </div>
 
-                            <!-- Ações Principais -->
-                            <div class="mobile-actions-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 24px;">
-                                <div class="relative" style="background: var(--accent-green); color: #050810; padding: 16px; border-radius: 16px; display: flex; flex-direction: column; align-items: flex-start; gap: 8px; box-shadow: 0 4px 12px rgba(0,230,118,0.2);">
-                                    <div style="background: rgba(255,255,255,0.4); padding: 8px; border-radius: 8px;">
-                                        <i data-lucide="arrow-down-to-line"></i>
+                            <!-- AÇÕES RÁPIDAS -->
+                            <div class="mobile-actions-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px;">
+                                <div class="relative" style="background: var(--accent-green); color: #050810; padding: 14px; border-radius: 14px; display: flex; flex-direction: column; gap: 6px;">
+                                    <div style="background: rgba(255,255,255,0.4); width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center;">
+                                        <i data-lucide="arrow-down-to-line" style="width: 18px;"></i>
                                     </div>
-                                    <span style="font-weight: 700;">Entrada</span>
-                                    
-                                    <!-- HOTSPOT 2 -->
-                                    <div class="hotspot" style="top: 15px; right: 15px;">
-                                        <div class="pulse" style="background-color: #050810; box-shadow: 0 0 0 0 rgba(5,8,16,0.7);"></div>
-                                        <div class="tooltip" style="left: -90px; width: 220px; bottom: 30px;">
+                                    <span style="font-weight: 700; font-size: 0.85rem;">Entrada</span>
+                                    <div class="hotspot" style="top: 10px; right: 10px;">
+                                        <div class="pulse" style="background-color: #050810;"></div>
+                                        <div class="tooltip tooltip-bottom tooltip-phone-left" style="top: 130%;">
                                             <strong>Zero Treinamento</strong><br>
-                                            Ações claras e interface à prova de erros para qualquer colaborador.
+                                            Telas limpas e objetivas para a equipe do galpão dar entrada ou saída sem cometer erros.
                                         </div>
                                     </div>
                                 </div>
 
-                                <div style="background: white; border: 1px solid #E2E8F0; color: #0F172A; padding: 16px; border-radius: 16px; display: flex; flex-direction: column; align-items: flex-start; gap: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.02);">
-                                    <div style="background: #F1F5F9; padding: 8px; border-radius: 8px;">
-                                        <i data-lucide="arrow-up-from-line" style="color: #64748B;"></i>
+                                <div style="background: var(--bg-card); border: 1px solid var(--border-color); color: var(--text-primary); padding: 14px; border-radius: 14px; display: flex; flex-direction: column; gap: 6px;">
+                                    <div style="background: var(--surface-2); width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center;">
+                                        <i data-lucide="arrow-up-from-line" style="width: 18px; color: var(--text-secondary);"></i>
                                     </div>
-                                    <span style="font-weight: 600;">Saída</span>
+                                    <span style="font-weight: 600; font-size: 0.85rem;">Saída</span>
                                 </div>
                             </div>
 
-                            <!-- Lista Rica -->
+                            <!-- LISTA -->
                             <div class="mobile-list-rich">
-                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
-                                    <h4 style="font-size: 0.8rem; font-weight: 600; color: #334155; margin: 0;">Últimas Movimentações</h4>
-                                    <a href="#" style="font-size: 0.7rem; color: var(--accent-green); text-decoration: none; font-weight: 700;">Ver tudo</a>
+                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                                    <h4 style="font-size: 0.8rem; font-weight: 600; color: var(--text-primary); margin: 0;">Últimas Movimentações</h4>
+                                    <span style="font-size: 0.68rem; color: var(--accent-green); font-weight: 700;">Ao vivo</span>
                                 </div>
                                 
-                                <!-- Item 1 -->
-                                <div class="relative" style="display: flex; align-items: center; gap: 12px; padding: 12px 0; border-bottom: 1px solid #F1F5F9;">
-                                    <div style="width: 40px; height: 40px; background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 8px; display: flex; align-items: center; justify-content: center;">
-                                        <i data-lucide="package" style="width: 20px; color: #94A3B8;"></i>
+                                <div style="display: flex; align-items: center; gap: 10px; padding: 10px 0; border-bottom: 1px solid var(--border-color);">
+                                    <div style="width: 36px; height: 36px; background: var(--surface-1); border: 1px solid var(--border-color); border-radius: 8px; display: flex; align-items: center; justify-content: center;">
+                                        <i data-lucide="package" style="width: 18px; color: var(--text-muted);"></i>
                                     </div>
                                     <div style="flex: 1;">
-                                        <div style="display: flex; justify-content: space-between; align-items: center;">
-                                            <span style="font-size: 0.85rem; font-weight: 600; color: #0F172A;">Papel Sulfite A4</span>
-                                            <span style="font-size: 0.85rem; font-weight: 700; color: #10B981;">+15 cx</span>
+                                        <div style="display: flex; justify-content: space-between;">
+                                            <span style="font-size: 0.82rem; font-weight: 600; color: var(--text-primary);">Papel Sulfite A4</span>
+                                            <span style="font-size: 0.82rem; font-weight: 700; color: var(--text-success);">+15 cx</span>
                                         </div>
-                                        <div style="display: flex; align-items: center; gap: 6px; margin-top: 4px;">
-                                            <span style="width: 6px; height: 6px; background: #10B981; border-radius: 50%;"></span>
-                                            <span style="font-size: 0.7rem; color: #64748B;">Recebido por Marcos • 14:32</span>
-                                        </div>
+                                        <span style="font-size: 0.68rem; color: var(--text-secondary);">Recebido por Marcos • 14:32</span>
                                     </div>
                                 </div>
 
-                                <!-- Item 2 (Com o Hotspot 3 posicionado corretamente aqui) -->
-                                <div class="relative" style="display: flex; align-items: center; gap: 12px; padding: 12px 0; border-bottom: 1px solid #F1F5F9;">
-                                    <div style="width: 40px; height: 40px; background: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 8px; display: flex; align-items: center; justify-content: center;">
-                                        <i data-lucide="monitor" style="width: 20px; color: #94A3B8;"></i>
+                                <div class="relative" style="display: flex; align-items: center; gap: 10px; padding: 10px 0;">
+                                    <div style="width: 36px; height: 36px; background: var(--surface-1); border: 1px solid var(--border-color); border-radius: 8px; display: flex; align-items: center; justify-content: center;">
+                                        <i data-lucide="monitor" style="width: 18px; color: var(--text-muted);"></i>
                                     </div>
+
                                     <div style="flex: 1;">
-                                        <div style="display: flex; justify-content: space-between; align-items: center;">
-                                            <span style="font-size: 0.85rem; font-weight: 600; color: #0F172A;">Monitor Dell 24"</span>
-                                            <span style="font-size: 0.85rem; font-weight: 700; color: #EF4444;">-2 un</span>
+                                        <div style="display: flex; justify-content: space-between;">
+                                            <span style="font-size: 0.82rem; font-weight: 600; color: var(--text-primary);">Monitor Dell 24"</span>
+                                            <span style="font-size: 0.82rem; font-weight: 700; color: var(--text-danger);">-2 un</span>
                                         </div>
-                                        <div style="display: flex; align-items: center; gap: 6px; margin-top: 4px;">
-                                            <span style="width: 6px; height: 6px; background: #EF4444; border-radius: 50%;"></span>
-                                            <span style="font-size: 0.7rem; color: #64748B;">Retirado por Ana • 11:15</span>
-                                        </div>
+                                        <span style="font-size: 0.68rem; color: var(--text-secondary);">Retirado por Ana • 11:15</span>
                                     </div>
-                                    
-                                    <!-- HOTSPOT 3 CORRIGIDO (Em cima do item do extrato) -->
-                                    <div class="hotspot" style="top: 50%; right: 10px; transform: translateY(-50%);">
+
+                                    <div class="hotspot" style="top: 50%; right: 4px; transform: translateY(-50%);">
                                         <div class="pulse"></div>
-                                        <div class="tooltip" style="left: -140px; width: 220px; bottom: 30px;">
-                                            <strong>Rastreabilidade Total</strong><br>
-                                            Saiba quem retirou, o quê, e a que horas. Fim dos sumiços no estoque.
+                                        <div class="tooltip tooltip-phone-right" style="bottom: 120%;">
+                                            <strong>Auditoria por Colaborador</strong><br>
+                                            Registro digital de quem deu a baixa e o horário exato. Fim do sumiço de material.
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
 
-                        <!-- Bottom Navigation Bar com Hotspots nos menus -->
-                        <div style="position: absolute; bottom: 0; left: 0; right: 0; background: white; border-top: 1px solid #E2E8F0; border-radius: 0 0 26px 26px; display: flex; justify-content: space-between; padding: 12px 24px 20px 24px; z-index: 20;">
-                            
-                            <!-- Menu Início -->
-                            <div class="relative" style="display: flex; flex-direction: column; align-items: center; gap: 4px; color: var(--accent-green);">
-                                <i data-lucide="home" style="width: 20px;"></i>
-                                <span style="font-size: 0.6rem; font-weight: 700;">Início</span>
+                        <!-- TELA 2: CATÁLOGO -->
+                        <div class="mobile-screen" data-mobile-screen="estoque">
+                            <div style="margin-bottom: 12px;">
+                                <h4 style="font-size: 0.95rem; font-weight: 700; color: var(--text-primary); margin-bottom: 2px;">Catálogo Físico</h4>
+                                <span style="font-size: 0.7rem; color: var(--text-secondary);">Saldo por estante e localização</span>
                             </div>
 
-                            <!-- Menu Estoque (Com Hotspot) -->
-                            <div class="relative" style="display: flex; flex-direction: column; align-items: center; gap: 4px; color: #94A3B8;">
-                                <i data-lucide="box" style="width: 20px;"></i>
-                                <span style="font-size: 0.6rem; font-weight: 500;">Estoque</span>
-                                <div class="hotspot" style="top: 0; right: 5px;">
+                            <div class="mobile-filter-pills">
+                                <span class="pill-item active">Todos (312)</span>
+                                <span class="pill-item">Escritório</span>
+                                <span class="pill-item">TI / Cabos</span>
+                                <span class="pill-item">EPIs</span>
+                            </div>
+
+                            <div style="display: flex; flex-direction: column; gap: 8px;">
+                                <div style="background: var(--surface-1); border: 1px solid var(--border-color); padding: 10px 12px; border-radius: 10px;">
+                                    <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 4px;">
+                                        <span style="font-size: 0.82rem; font-weight: 600; color: var(--text-primary);">Papel Sulfite Chamex A4</span>
+                                        <strong style="font-size: 0.85rem; color: var(--text-primary);">45 cx</strong>
+                                    </div>
+                                    <div style="display: flex; justify-content: space-between; font-size: 0.68rem; color: var(--text-secondary);">
+                                        <span><i data-lucide="map-pin" style="width: 12px; vertical-align: middle;"></i> Galpão 1 · Prateleira B2</span>
+                                        <span style="color: var(--text-success); font-weight: 600;">Estoque Normal</span>
+                                    </div>
+                                </div>
+
+                                <div class="relative" style="background: var(--bg-danger); border: 1px solid var(--border-color); padding: 10px 12px; border-radius: 10px;">
+                                    <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 4px;">
+                                        <span style="font-size: 0.82rem; font-weight: 600; color: var(--text-danger);">Mouse Óptico USB</span>
+                                        <strong style="font-size: 0.85rem; color: var(--text-danger);">3 un</strong>
+                                    </div>
+                                    <div style="display: flex; justify-content: space-between; font-size: 0.68rem; color: var(--text-danger);">
+                                        <span style="opacity: 0.8;"><i data-lucide="map-pin" style="width: 12px; vertical-align: middle;"></i> Gaveta TI · Caixa 04</span>
+                                        <span style="font-weight: 700;">Repor Estoque</span>
+                                    </div>
+
+                                    <div class="hotspot" style="top: 10px; right: 10px;">
+                                        <div class="pulse"></div>
+                                        <div class="tooltip tooltip-left" style="width: 220px;">
+                                            <strong>Localização Física Exata</strong><br>
+                                            Acaba com o tempo perdido procurando caixas e ferramentas dentro do almoxarifado.
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- TELA 3: HISTÓRICO -->
+                        <div class="mobile-screen" data-mobile-screen="historico">
+                            <div style="margin-bottom: 14px;">
+                                <h4 style="font-size: 0.95rem; font-weight: 700; color: var(--text-primary); margin-bottom: 2px;">Extrato de Movimentações</h4>
+                                <span style="font-size: 0.7rem; color: var(--text-secondary);">Auditoria em tempo real por colaborador</span>
+                            </div>
+
+                            <div style="display: flex; flex-direction: column;">
+                                <div class="audit-timeline-item">
+                                    <div class="audit-icon-box" style="background: var(--bg-success); color: var(--text-success);">
+                                        <i data-lucide="arrow-down-left" style="width: 16px;"></i>
+                                    </div>
+                                    <div style="flex: 1;">
+                                        <div style="display: flex; justify-content: space-between; font-size: 0.8rem; font-weight: 600; color: var(--text-primary);">
+                                            <span>Entrada · NF-e 14820</span>
+                                            <span style="color: var(--text-success);">+50 cx</span>
+                                        </div>
+                                        <div style="font-size: 0.68rem; color: var(--text-secondary); margin-top: 2px;">Papel Chamex A4 · Forn. Kalunga</div>
+                                        <div style="font-size: 0.65rem; color: var(--text-muted); margin-top: 2px;">Marcos L. · Hoje às 14:32</div>
+                                    </div>
+                                </div>
+
+                                <div class="audit-timeline-item relative">
+                                    <div class="audit-icon-box" style="background: var(--bg-danger); color: var(--text-danger);">
+                                        <i data-lucide="arrow-up-right" style="width: 16px;"></i>
+                                    </div>
+                                    <div style="flex: 1;">
+                                        <div style="display: flex; justify-content: space-between; font-size: 0.8rem; font-weight: 600; color: var(--text-primary);">
+                                            <span>Baixa para Suporte TI</span>
+                                            <span style="color: var(--text-danger);">-2 un</span>
+                                        </div>
+                                        <div style="font-size: 0.68rem; color: var(--text-secondary); margin-top: 2px;">Monitor Dell 24" · Solicitante: Ana P.</div>
+                                        <div style="font-size: 0.65rem; color: var(--text-muted); margin-top: 2px;">Ana P. · Hoje às 11:15</div>
+                                    </div>
+
+                                    <div class="hotspot" style="top: 15px; right: 0;">
+                                        <div class="pulse"></div>
+                                        <div class="tooltip tooltip-left" style="width: 220px;">
+                                            <strong>Auditoria Confiável</strong><br>
+                                            Cada saída exige identificação e motivo da baixa. Fim do sumiço de itens no final do mês.
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- TELA 4: MENU -->
+                        <div class="mobile-screen" data-mobile-screen="menu">
+                            <div style="margin-bottom: 14px;">
+                                <h4 style="font-size: 0.95rem; font-weight: 700; color: var(--text-primary); margin-bottom: 2px;">Operação e Campo</h4>
+                                <span style="font-size: 0.7rem; color: var(--text-secondary);">Recursos para rotinas sem internet</span>
+                            </div>
+
+                            <div class="relative" style="background: var(--bg-success); border: 1px solid var(--border-color); padding: 12px; border-radius: 12px; margin-bottom: 12px; display: flex; align-items: center; justify-content: space-between;">
+                                <div style="display: flex; align-items: center; gap: 10px;">
+                                    <i data-lucide="wifi-off" style="width: 20px; color: var(--text-success);"></i>
+                                    <div>
+                                        <div style="font-size: 0.8rem; font-weight: 700; color: var(--text-success);">Modo Offline Ativo</div>
+                                        <span style="font-size: 0.68rem; color: var(--text-success); opacity: 0.8;">Sincroniza automático ao reconectar</span>
+                                    </div>
+                                </div>
+                                
+                                <div class="hotspot" style="top: 15px; right: 10px;">
                                     <div class="pulse"></div>
-                                    <div class="tooltip tooltip-bottom" style="width: 180px;">
-                                        <strong>Catálogo Geral</strong><br>Consulte saldos e localização de itens.
+                                    <div class="tooltip tooltip-left" style="width: 220px;">
+                                        <strong>Funciona sem Sinal</strong><br>
+                                        A equipe continua bipando e registrando itens mesmo em subsolos ou galpões sem Wi-Fi/4G.
                                     </div>
                                 </div>
                             </div>
 
-                            <!-- Menu Histórico (Com Hotspot) -->
-                            <div class="relative" style="display: flex; flex-direction: column; align-items: center; gap: 4px; color: #94A3B8;">
-                                <i data-lucide="history" style="width: 20px;"></i>
-                                <span style="font-size: 0.6rem; font-weight: 500;">Histórico</span>
-                                <div class="hotspot" style="top: 0; right: 5px;">
-                                    <div class="pulse"></div>
-                                    <div class="tooltip tooltip-bottom" style="width: 180px;">
-                                        <strong>Auditoria</strong><br>Linha do tempo de todas as operações do dia.
-                                    </div>
+                            <div style="display: flex; flex-direction: column; gap: 6px;">
+                                <div style="background: var(--surface-1); border: 1px solid var(--border-color); padding: 12px; border-radius: 10px; display: flex; justify-content: space-between; align-items: center; font-size: 0.8rem; color: var(--text-primary); font-weight: 500;">
+                                    <span style="display: flex; align-items: center; gap: 8px;">
+                                        <i data-lucide="qr-code" style="width: 16px; color: var(--text-secondary);"></i> Imprimir Etiquetas QR Code
+                                    </span>
+                                    <i data-lucide="chevron-right" style="width: 16px; color: var(--text-muted);"></i>
                                 </div>
-                            </div>
-
-                            <!-- Menu Config/Mais -->
-                            <div class="relative" style="display: flex; flex-direction: column; align-items: center; gap: 4px; color: #94A3B8;">
-                                <i data-lucide="more-horizontal" style="width: 20px;"></i>
-                                <span style="font-size: 0.6rem; font-weight: 500;">Menu</span>
                             </div>
                         </div>
                     </div>
+
+                    <!-- Barra de Navegação Inferior -->
+                    <div style="position: absolute; bottom: 0; left: 0; right: 0; background: var(--bg-card); border-top: 1px solid var(--border-color); border-radius: 0 0 26px 26px; display: flex; justify-content: space-between; padding: 12px 24px 20px 24px; z-index: 20;">
+                        <button type="button" class="mobile-nav-btn active" data-mobile-nav="inicio">
+                            <i data-lucide="home" style="width: 20px;"></i><span>Início</span>
+                        </button>
+                        <button type="button" class="mobile-nav-btn" data-mobile-nav="estoque">
+                            <i data-lucide="box" style="width: 20px;"></i><span>Estoque</span>
+                        </button>
+                        <button type="button" class="mobile-nav-btn" data-mobile-nav="historico">
+                            <i data-lucide="history" style="width: 20px;"></i><span>Histórico</span>
+                        </button>
+                        <button type="button" class="mobile-nav-btn" data-mobile-nav="menu">
+                            <i data-lucide="more-horizontal" style="width: 20px;"></i><span>Menu</span>
+                        </button>
+                    </div>
+                </div>
                 </div>
             </div>
             <div class="modal-footer">
@@ -666,66 +999,79 @@
             </div>
             
             <div class="modal-body custom-scrollbar">
-                <p style="text-align: center; color: var(--text-secondary); margin-bottom: 24px; font-size: 0.95rem;">Passe o mouse sobre os pontos em destaque no painel financeiro.</p>
+                <p style="text-align: center; color: var(--text-secondary); margin-bottom: 24px; font-size: 0.95rem;">Toque nos módulos e pontos destacados para explorar o sistema.</p>
                 
                 <!-- Casca do App Desktop (Dashboard) -->
-                <div class="dashboard-mockup">
+                <div class="dashboard-mockup mockup-theme-dark">
                     
                     <!-- Menu Lateral Falso -->
                     <div class="dash-sidebar">
-                        <div class="dash-logo"><div class="logo-icon" style="width: 24px; height: 24px;"></div></div>
-                        <div class="dash-nav">
-                            
-                            <!-- Menu 1: Dashboard -->
-                            <div class="dash-nav-item active relative">
-                                <i data-lucide="layout-dashboard"></i>
-                                <div class="hotspot" style="top: 5px; right: -5px;">
-                                    <div class="pulse"></div>
-                                    <div class="tooltip tooltip-right">
-                                        <strong>Visão Central</strong><br>Todas as métricas do negócio consolidadas em uma única tela.
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <!-- Menu 2: Relatórios -->
-                            <div class="dash-nav-item relative">
-                                <i data-lucide="pie-chart"></i>
-                                <div class="hotspot" style="top: 5px; right: -5px;">
-                                    <div class="pulse"></div>
-                                    <div class="tooltip tooltip-right">
-                                        <strong>Relatórios Dinâmicos</strong><br>DRE, Fluxo de Caixa e análises prontas em 1 clique.
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <!-- Menu 3: Equipe/Acessos -->
-                            <div class="dash-nav-item relative">
-                                <i data-lucide="users"></i>
-                                <div class="hotspot" style="top: 5px; right: -5px;">
-                                    <div class="pulse"></div>
-                                    <div class="tooltip tooltip-right">
-                                        <strong>Controle de Acessos</strong><br>Defina o que cada funcionário pode ver ou editar no sistema.
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <!-- Menu 4: Configurações -->
-                            <div class="dash-nav-item relative">
-                                <i data-lucide="settings"></i>
-                                <div class="hotspot" style="top: 5px; right: -5px;">
-                                    <div class="pulse"></div>
-                                    <div class="tooltip tooltip-right">
-                                        <strong>Customização Total</strong><br>O sistema se molda às regras da sua empresa, não o contrário.
-                                    </div>
-                                </div>
-                            </div>
-                            
+                        <div class="dash-logo">
+                            <img src="/favicon_io/android-chrome-192x192.png" alt="Nexum Logo" style="width: 26px; height: 26px; border-radius: 6px; margin-top: 4px;">
                         </div>
+                        <div class="dash-nav">
+
+                            <!-- Menu 1: Visão geral -->
+                            <button
+                                type="button"
+                                class="dash-nav-item active"
+                                data-screen="resumo"
+                                aria-label="Abrir visão geral"
+                                aria-pressed="true"
+                            >
+                                <i data-lucide="layout-dashboard" aria-hidden="true"></i>
+                                <span class="dash-nav-label">Visão geral</span>
+                            </button>
+
+                            <!-- Menu 2: Relatórios -->
+                            <button
+                                type="button"
+                                class="dash-nav-item"
+                                data-screen="relatorios"
+                                aria-label="Abrir relatórios"
+                                aria-pressed="false"
+                            >
+                                <i data-lucide="pie-chart" aria-hidden="true"></i>
+                                <span class="dash-nav-label">Relatórios</span>
+                            </button>
+
+                            <!-- Menu 3: Equipe e acessos -->
+                            <button
+                                type="button"
+                                class="dash-nav-item"
+                                data-screen="acessos"
+                                aria-label="Abrir equipe e acessos"
+                                aria-pressed="false"
+                            >
+                                <i data-lucide="users" aria-hidden="true"></i>
+                                <span class="dash-nav-label">Equipe e acessos</span>
+                            </button>
+
+                            <!-- Menu 4: Configurações -->
+                            <button
+                                type="button"
+                                class="dash-nav-item"
+                                data-screen="configuracoes"
+                                aria-label="Abrir configurações"
+                                aria-pressed="false"
+                            >
+                                <i data-lucide="settings" aria-hidden="true"></i>
+                                <span class="dash-nav-label">Configurações</span>
+                            </button>
+
+                        </div>
+
+                        <button type="button" class="mockup-theme-btn pulse-alert" style="margin-top: auto; margin-bottom: 8px; border: none;" onclick="toggleMockupTheme(this)" title="Modo Noturno">
+                            <i data-lucide="moon" class="m-moon"></i>
+                            <i data-lucide="sun" class="m-sun"></i>
+                        </button>
+
                         <div class="dash-avatar">CEO</div>
                     </div>
 
                     <!-- Área Principal Falsa -->
                     <div class="dash-main">
+                        <div class="dash-screen active" data-screen-panel="resumo">
                         <div class="dash-header">
                             <div>
                                 <h4 style="font-size: 1.1rem; color: var(--text-primary);">Resumo Financeiro</h4>
@@ -820,7 +1166,314 @@
                                     </div>
                                 </div>
                             </div>
+                        </div></div>
+                <div class="dash-screen" data-screen-panel="relatorios">
+                    <div class="cockpit-toolbar">
+                        <div>
+                            <h4 style="font-size: 1.05rem; color: var(--text-primary); margin-bottom: 2px;">DRE Gerencial & Métricas</h4>
+                            <span style="font-size: 0.75rem; color: var(--text-secondary);">Competência: Mês Vigente (Setembro)</span>
                         </div>
+                        <div style="display: flex; gap: 8px; align-items: center;">
+                            <div class="cockpit-tabs-mini">
+                                <button class="tab-mini-item active" type="button">Mensal</button>
+                                <button class="tab-mini-item" type="button">Trimestral</button>
+                                <button class="tab-mini-item" type="button">Anual</button>
+                            </div>
+                            <div class="dash-export relative" style="cursor: pointer;">
+                                <i data-lucide="file-text" style="width: 14px; margin-right: 6px;"></i> PDF Gerencial
+                                <div class="hotspot" style="top: -6px; right: -6px;">
+                                    <div class="pulse"></div>
+                                    <div class="tooltip tooltip-bottom" style="left: -130px; width: 220px;">
+                                        <strong>DRE em 1 Clique</strong><br>
+                                        Relatório contábil-financeiro fechado sem depender de preenchimento manual no Excel.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Mini KPIs da DRE -->
+                    <div class="dash-kpis" style="grid-template-columns: repeat(3, 1fr);">
+                        <div class="dash-kpi-card">
+                            <span class="kpi-title">Margem Bruta</span>
+                            <span class="kpi-value text-emerald">48.8%</span>
+                            <span class="kpi-sub"><i data-lucide="check" style="width: 12px;"></i> Meta atingida (≥ 45%)</span>
+                        </div>
+                        <div class="dash-kpi-card">
+                            <span class="kpi-title">EBITDA Gerencial</span>
+                            <span class="kpi-value">R$ 58.180</span>
+                            <span class="kpi-sub text-emerald"><i data-lucide="trending-up" style="width: 12px;"></i> +8.4% vs mês anterior</span>
+                        </div>
+                        <div class="dash-kpi-card">
+                            <span class="kpi-title">Margem Líquida</span>
+                            <span class="kpi-value text-emerald">32.8%</span>
+                            <span class="kpi-sub" style="color: var(--text-secondary);">R$ 46.780 em caixa</span>
+                        </div>
+                    </div>
+
+                    <!-- Grade: Tabela DRE e Painel de Metas -->
+                    <div class="dash-grid">
+                        <!-- Tabela DRE -->
+                        <div class="dash-box relative">
+                            <div class="box-title" style="margin-bottom: 10px;">Demonstrativo de Resultado do Exercício (DRE)</div>
+                            <div class="dre-table">
+                                <div class="dre-row highlight">
+                                    <span>(+) Receita Operacional Bruta</span>
+                                    <strong class="text-emerald">R$ 142.500</strong>
+                                </div>
+                                <div class="dre-row">
+                                    <span style="color: var(--text-secondary); padding-left: 10px;">(-) Impostos s/ Faturamento (Simples/DAS)</span>
+                                    <span class="text-red">- R$ 11.400</span>
+                                </div>
+                                <div class="dre-row highlight">
+                                    <span>(=) Receita Líquida</span>
+                                    <strong>R$ 131.100</strong>
+                                </div>
+                                <div class="dre-row">
+                                    <span style="color: var(--text-secondary); padding-left: 10px;">(-) Custo Operacional Direto (CMV/Serviços)</span>
+                                    <span class="text-red">- R$ 61.500</span>
+                                </div>
+                                <div class="dre-row">
+                                    <span style="color: var(--text-secondary); padding-left: 10px;">(-) Despesas Administrativas e Pessoal</span>
+                                    <span class="text-red">- R$ 22.820</span>
+                                </div>
+                                <div class="dre-row total-result">
+                                    <span>(=) Lucro Líquido do Período</span>
+                                    <span>R$ 46.780</span>
+                                </div>
+                            </div>
+                            <div class="hotspot" style="top: 15px; right: 15px;">
+                                <div class="pulse"></div>
+                                <div class="tooltip" style="left: -140px; width: 230px;">
+                                    <strong>Fórmula Automatizada</strong><br>
+                                    Categorização automática de lançamentos sem erros de fórmulas em planilhas compartilhadas.
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Painel Metas vs Realizado -->
+                        <div class="dash-box">
+                            <div class="box-title" style="margin-bottom: 12px;">Metas Operacionais do Trimestre</div>
+                            <div style="display: flex; flex-direction: column; gap: 14px;">
+                                <div>
+                                    <div style="display: flex; justify-content: space-between; font-size: 0.75rem; margin-bottom: 4px;">
+                                        <span>Faturamento da Operação</span>
+                                        <strong>92% (R$ 427k / R$ 460k)</strong>
+                                    </div>
+                                    <div style="width: 100%; height: 7px; background: var(--surface-2); border-radius: 4px; overflow: hidden;">
+                                        <div style="width: 92%; height: 100%; background: var(--accent-secondary); border-radius: 4px;"></div>
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <div style="display: flex; justify-content: space-between; font-size: 0.75rem; margin-bottom: 4px;">
+                                        <span>Teto de Despesas Fixas</span>
+                                        <strong class="text-emerald">Dentro do limite (78%)</strong>
+                                    </div>
+                                    <div style="width: 100%; height: 7px; background: var(--surface-2); border-radius: 4px; overflow: hidden;">
+                                        <div style="width: 78%; height: 100%; background: #10B981; border-radius: 4px;"></div>
+                                    </div>
+                                </div>
+
+                                <div style="margin-top: 6px; padding: 10px; border-radius: 6px; background-color: var(--surface-1); border: 1px dashed var(--border-color); font-size: 0.72rem; color: var(--text-secondary);">
+                                    <i data-lucide="info" style="width: 13px; vertical-align: middle; margin-right: 4px; color: var(--accent-primary);"></i>
+                                    Previsão de fechamento com <strong>14% acima</strong> do trimestre anterior.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="dash-screen" data-screen-panel="acessos">
+                    <div class="cockpit-toolbar">
+                        <div>
+                            <h4 style="font-size: 1.05rem; color: var(--text-primary); margin-bottom: 2px;">Gestão de Equipe e Níveis de Acesso</h4>
+                            <span style="font-size: 0.75rem; color: var(--text-secondary);">4 usuários ativos · Política de segurança RBAC</span>
+                        </div>
+                        <div style="display: flex; gap: 8px;">
+                            <div class="btn-primary" style="padding: 6px 14px; font-size: 0.75rem; border-radius: 6px; cursor: pointer;">
+                                + Convidar Membro
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Lista de Colaboradores e Níveis de Alçada -->
+                    <div class="dash-grid" style="grid-template-columns: minmax(0, 1.8fr) minmax(240px, 1fr);">
+                        <div class="dash-box relative">
+                            <div class="box-title" style="margin-bottom: 12px;">Usuários e Papéis Definidos</div>
+                            <div class="users-table-list">
+                                
+                                <!-- Usuário 1: Diretoria -->
+                                <div class="user-row">
+                                    <div class="user-info">
+                                        <div class="user-avatar-mini" style="background-color: rgba(59, 130, 246, 0.15); color: #2563EB;">JS</div>
+                                        <div>
+                                            <div style="font-size: 0.8rem; font-weight: 600; color: var(--text-primary);">João Silva</div>
+                                            <span style="font-size: 0.68rem; color: var(--text-secondary);">joao@empresa.com.br</span>
+                                        </div>
+                                    </div>
+                                    <div style="display: flex; align-items: center; gap: 8px;">
+                                        <span class="tag-status bg-blue">Diretoria / Admin Total</span>
+                                        <span style="width: 8px; height: 8px; border-radius: 50%; background: #10B981;" title="Online"></span>
+                                    </div>
+                                </div>
+
+                                <!-- Usuário 2: Financeiro -->
+                                <div class="user-row">
+                                    <div class="user-info">
+                                        <div class="user-avatar-mini" style="background-color: rgba(16, 185, 129, 0.15); color: #059669;">MC</div>
+                                        <div>
+                                            <div style="font-size: 0.8rem; font-weight: 600; color: var(--text-primary);">Mariana Costa</div>
+                                            <span style="font-size: 0.68rem; color: var(--text-secondary);">mariana.fin@empresa.com.br</span>
+                                        </div>
+                                    </div>
+                                    <div style="display: flex; align-items: center; gap: 8px;">
+                                        <span class="tag-status" style="background-color: var(--bg-success); color: var(--text-success);">Gestão Financeira</span>
+                                        <span style="width: 8px; height: 8px; border-radius: 50%; background: #10B981;" title="Online"></span>
+                                    </div>
+                                </div>
+
+                                <!-- Usuário 3: Almoxarifado -->
+                                <div class="user-row">
+                                    <div class="user-info">
+                                        <div class="user-avatar-mini" style="background-color: rgba(249, 115, 22, 0.15); color: #EA580C;">ML</div>
+                                        <div>
+                                            <div style="font-size: 0.8rem; font-weight: 600; color: var(--text-primary);">Marcos Lima</div>
+                                            <span style="font-size: 0.68rem; color: var(--text-secondary);">marcos.estoque@empresa.com.br</span>
+                                        </div>
+                                    </div>
+                                    <div style="display: flex; align-items: center; gap: 8px;">
+                                        <span class="tag-status" style="background-color: var(--bg-warning); color: var(--text-warning);">Operador de Estoque</span>
+                                        <span style="width: 8px; height: 8px; border-radius: 50%; background: #94A3B8;" title="Offline"></span>
+                                    </div>
+                                </div>
+
+                            </div>
+
+                            <div class="hotspot" style="top: 20px; right: 20px;">
+                                <div class="pulse"></div>
+                                <div class="tooltip" style="left: -130px; width: 230px;">
+                                    <strong>Controle de Alçada e Sigilo</strong><br>
+                                    O operador de estoque não vê faturamento; o financeiro não altera estoque. Cada setor focado no seu escopo.
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Painel de Regras de Segurança -->
+                        <div class="dash-box">
+                            <div class="box-title" style="margin-bottom: 12px;">Diretrizes de Segurança</div>
+                            <div style="display: flex; flex-direction: column; gap: 10px; font-size: 0.74rem;">
+                                <div style="display: flex; align-items: center; gap: 8px; padding: 8px; background: var(--surface-1); border-radius: 6px;">
+                                    <i data-lucide="shield-check" style="width: 16px; color: var(--accent-secondary); flex-shrink: 0;"></i>
+                                    <span><strong>Autenticação 2FA:</strong> Obrigatória para aprovações</span>
+                                </div>
+                                <div style="display: flex; align-items: center; gap: 8px; padding: 8px; background: var(--surface-1); border-radius: 6px;">
+                                    <i data-lucide="history" style="width: 16px; color: var(--accent-primary); flex-shrink: 0;"></i>
+                                    <span><strong>Log de Auditoria:</strong> Registro de quem criou, editou ou baixou relatórios</span>
+                                </div>
+                                <div style="display: flex; align-items: center; gap: 8px; padding: 8px; background: var(--surface-1); border-radius: 6px;">
+                                    <i data-lucide="lock" style="width: 16px; color: var(--text-secondary); flex-shrink: 0;"></i>
+                                    <span><strong>Sessão segura:</strong> Expiração automática após inatividade</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="dash-screen" data-screen-panel="configuracoes">
+                    <div class="cockpit-toolbar">
+                        <div>
+                            <h4 style="font-size: 1.05rem; color: var(--text-primary); margin-bottom: 2px;">Regras da Operação & Integrações</h4>
+                            <span style="font-size: 0.75rem; color: var(--text-secondary);">Parametrização sob medida para a rotina da sua empresa</span>
+                        </div>
+                        <span class="tag-status" style="background-color: var(--bg-success); color: var(--text-success); font-size: 0.72rem; padding: 6px 10px;">
+                            ● Ambiente de Produção Ativo
+                        </span>
+                    </div>
+
+                    <div class="dash-grid">
+                        <!-- Automações Ativas -->
+                        <div class="dash-box relative">
+                            <div class="box-title" style="margin-bottom: 12px;">Automações e Alertas Operacionais</div>
+                            <div style="display: flex; flex-direction: column; gap: 8px;">
+                                
+                                <div class="config-item-card">
+                                    <div>
+                                        <div style="font-size: 0.78rem; font-weight: 600; color: var(--text-primary);">Alerta de Boletos no Telegram</div>
+                                        <div style="font-size: 0.68rem; color: var(--text-secondary);">Disparo automático em D-2 e no dia do vencimento</div>
+                                    </div>
+                                    <div class="toggle-switch-fake"></div>
+                                </div>
+
+                                <div class="config-item-card">
+                                    <div>
+                                        <div style="font-size: 0.78rem; font-weight: 600; color: var(--text-primary);">Ponto de Reposição Automático</div>
+                                        <div style="font-size: 0.68rem; color: var(--text-secondary);">Gera demanda de compra quando estoque atinge mínimo</div>
+                                    </div>
+                                    <div class="toggle-switch-fake"></div>
+                                </div>
+
+                                <div class="config-item-card">
+                                    <div>
+                                        <div style="font-size: 0.78rem; font-weight: 600; color: var(--text-primary);">Resumo Executivo Diário (18h30)</div>
+                                        <div style="font-size: 0.68rem; color: var(--text-secondary);">Envio consolidado de entradas e saídas aos sócios</div>
+                                    </div>
+                                    <div class="toggle-switch-fake"></div>
+                                </div>
+
+                            </div>
+
+                            <div class="hotspot" style="top: 20px; right: 20px;">
+                                <div class="pulse"></div>
+                                <div class="tooltip" style="left: -130px; width: 230px;">
+                                    <strong>Regras Customizadas</strong><br>
+                                    O sistema adapta-se à dinâmica do seu negócio, sem obrigar a empresa a mudar seus processos consolidados.
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Integrações Externas Conectadas -->
+                        <div class="dash-box">
+                            <div class="box-title" style="margin-bottom: 12px;">Conexões & APIs</div>
+                            <div style="display: flex; flex-direction: column; gap: 8px;">
+                                
+                                <div style="padding: 10px; background: var(--surface-1); border: 1px solid var(--border-color); border-radius: 8px; display: flex; align-items: center; justify-content: space-between;">
+                                    <div style="display: flex; align-items: center; gap: 8px;">
+                                        <i data-lucide="landmark" style="width: 16px; color: var(--accent-primary);"></i>
+                                        <div>
+                                            <div style="font-size: 0.75rem; font-weight: 600;">Conta PJ / API Bancária</div>
+                                            <span style="font-size: 0.65rem; color: var(--text-secondary);">Conciliação Pix e Boletos</span>
+                                        </div>
+                                    </div>
+                                    <span style="font-size: 0.68rem; color: var(--text-success); font-weight: 600;">Conectado ●</span>
+                                </div>
+
+                                <div style="padding: 10px; background: var(--surface-1); border: 1px solid var(--border-color); border-radius: 8px; display: flex; align-items: center; justify-content: space-between;">
+                                    <div style="display: flex; align-items: center; gap: 8px;">
+                                        <i data-lucide="file-check-2" style="width: 16px; color: var(--accent-secondary);"></i>
+                                        <div>
+                                            <div style="font-size: 0.75rem; font-weight: 600;">Emissor Fiscal (NF-e/NFS-e)</div>
+                                            <span style="font-size: 0.65rem; color: var(--text-secondary);">Sefaz BA e Prefeitura</span>
+                                        </div>
+                                    </div>
+                                    <span style="font-size: 0.68rem; color: var(--text-success); font-weight: 600;">Ativo ●</span>
+                                </div>
+
+                                <div style="padding: 10px; background: var(--surface-1); border: 1px solid var(--border-color); border-radius: 8px; display: flex; align-items: center; justify-content: space-between;">
+                                    <div style="display: flex; align-items: center; gap: 8px;">
+                                        <i data-lucide="message-circle" style="width: 16px; color: #25D366;"></i>
+                                        <div>
+                                            <div style="font-size: 0.75rem; font-weight: 600;">WhatsApp Cloud API</div>
+                                            <span style="font-size: 0.65rem; color: var(--text-secondary);">Disparo de notificações</span>
+                                        </div>
+                                    </div>
+                                    <span style="font-size: 0.68rem; color: var(--text-success); font-weight: 600;">Ativo ●</span>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
                     </div>
                 </div>
@@ -841,6 +1494,9 @@
         </div>
     </footer>
 
+    <div id="tooltip-portal">
+        <div class="portal-bubble"></div>
+    </div>
     <script src="script.js"></script>
 </body>
 </html>

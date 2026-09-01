@@ -1,5 +1,74 @@
-// Inicializar ícones Lucide
+const THEME_STORAGE_KEY = 'nexum-theme';
+
+function getPreferredTheme() {
+    const savedTheme = localStorage.getItem(THEME_STORAGE_KEY);
+
+    if (savedTheme === 'light' || savedTheme === 'dark') {
+        return savedTheme;
+    }
+
+    return window.matchMedia('(prefers-color-scheme: dark)').matches
+        ? 'dark'
+        : 'light';
+}
+
+function applyTheme(theme) {
+    const root = document.documentElement;
+    const themeToggle = document.getElementById('theme-toggle');
+    const isDark = theme === 'dark';
+
+    root.dataset.theme = theme;
+
+    if (themeToggle) {
+        themeToggle.setAttribute(
+            'aria-label',
+            isDark ? 'Ativar tema claro' : 'Ativar tema escuro'
+        );
+
+        themeToggle.setAttribute(
+            'title',
+            isDark ? 'Ativar tema claro' : 'Ativar tema escuro'
+        );
+
+        themeToggle.setAttribute('aria-pressed', String(isDark));
+    }
+
+    const themeColor = document.querySelector(
+        'meta[name="theme-color"]'
+    );
+
+    if (themeColor) {
+        themeColor.setAttribute(
+            'content',
+            isDark ? '#111827' : '#FAFAF8'
+        );
+    }
+}
+
+function initializeTheme() {
+    applyTheme(getPreferredTheme());
+
+    const themeToggle = document.getElementById('theme-toggle');
+
+    if (!themeToggle) {
+        return;
+    }
+
+    themeToggle.addEventListener('click', () => {
+        const currentTheme =
+            document.documentElement.dataset.theme || 'light';
+
+        const nextTheme =
+            currentTheme === 'dark' ? 'light' : 'dark';
+
+        localStorage.setItem(THEME_STORAGE_KEY, nextTheme);
+        applyTheme(nextTheme);
+    });
+}
+
+initializeTheme();
 lucide.createIcons();
+
 
 // Animação de rolagem (Fade In simples)
 document.addEventListener("DOMContentLoaded", () => {
@@ -224,3 +293,241 @@ document.querySelectorAll('.modal-overlay').forEach(overlay => {
 document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') fecharModalMockup();
 });
+
+function initializeCockpitNavigation() {
+    const cockpitModal = document.getElementById(
+        'modal-mockup-cockpit'
+    );
+
+    if (!cockpitModal) {
+        return;
+    }
+
+    const navigationButtons = cockpitModal.querySelectorAll(
+        '.dash-nav-item[data-screen]'
+    );
+
+    const screens = cockpitModal.querySelectorAll(
+        '.dash-screen[data-screen-panel]'
+    );
+
+    navigationButtons.forEach((button) => {
+        button.addEventListener('click', () => {
+            const targetScreen = button.dataset.screen;
+
+            navigationButtons.forEach((item) => {
+                const isActive = item === button;
+
+                item.classList.toggle('active', isActive);
+                item.setAttribute(
+                    'aria-pressed',
+                    String(isActive)
+                );
+            });
+
+            screens.forEach((screen) => {
+                const isTarget =
+                    screen.dataset.screenPanel === targetScreen;
+
+                screen.classList.toggle('active', isTarget);
+            });
+
+            if (window.lucide) {
+                lucide.createIcons();
+            }
+        });
+    });
+}
+
+document.addEventListener(
+    'DOMContentLoaded',
+    initializeCockpitNavigation
+);
+
+// =========================================
+// CONTROLE DE NAVEGAÇÃO DO ESTOQUE MOBILE
+// =========================================
+function initializeMobileMockupNavigation() {
+    const estoqueModal = document.getElementById('modal-mockup-estoque');
+    if (!estoqueModal) return;
+
+    const navButtons = estoqueModal.querySelectorAll('.mobile-nav-btn[data-mobile-nav]');
+    const screens = estoqueModal.querySelectorAll('.mobile-screen[data-mobile-screen]');
+
+    navButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            const targetScreen = button.dataset.mobileNav;
+
+            // Atualiza botões ativos
+            navButtons.forEach(btn => {
+                const isActive = btn === button;
+                btn.classList.toggle('active', isActive);
+            });
+
+            // Alterna a tela correspondente
+            screens.forEach(screen => {
+                const isTarget = screen.dataset.mobileScreen === targetScreen;
+                screen.classList.toggle('active', isTarget);
+            });
+
+            if (window.lucide) {
+                lucide.createIcons();
+            }
+        });
+    });
+}
+
+document.addEventListener('DOMContentLoaded', initializeMobileMockupNavigation);
+
+// ============================================================
+// PORTAL DE TOOLTIP para o .mobile-device
+// Resolve: overflow:hidden do celular cortava os balões
+// ============================================================
+(function () {
+    const portal      = document.getElementById('tooltip-portal');
+    const portalBubble = portal.querySelector('.portal-bubble');
+    let activeHotspot = null;
+
+    function showPortalTooltip(hotspot) {
+        // Lê o conteúdo HTML do tooltip original (filho do hotspot)
+        const originalTooltip = hotspot.querySelector('.tooltip');
+        if (!originalTooltip) return;
+
+        portalBubble.innerHTML = originalTooltip.innerHTML;
+
+        // Decide se a seta aponta para cima ou para baixo
+        const isBottom = originalTooltip.classList.contains('tooltip-bottom');
+        portalBubble.classList.toggle('arrow-up', isBottom);
+
+        // Posiciona o portal próximo ao hotspot usando coordenadas da viewport
+        const rect = hotspot.getBoundingClientRect();
+
+        // Mostra temporariamente (invisível) para medir largura real do balão
+        portal.style.visibility = 'hidden';
+        portal.style.opacity    = '0';
+        portal.style.display    = 'block';
+        const bubbleW = portalBubble.offsetWidth;
+        const bubbleH = portalBubble.offsetHeight;
+
+        let top, left;
+
+        if (isBottom) {
+            // Balão aparece ABAIXO do hotspot
+            top  = rect.bottom + 8;
+            left = rect.left + rect.width / 2 - bubbleW / 2;
+        } else {
+            // Balão aparece ACIMA do hotspot (padrão)
+            top  = rect.top - bubbleH - 12;
+            left = rect.left + rect.width / 2 - bubbleW / 2;
+        }
+
+        // Impede vazar pela borda esquerda/direita da tela
+        const margin = 8;
+        left = Math.max(margin, Math.min(left, window.innerWidth - bubbleW - margin));
+
+        portal.style.top  = top  + 'px';
+        portal.style.left = left + 'px';
+
+        // Exibe com animação
+        portal.style.display    = '';
+        portal.style.visibility = '';
+        portal.style.opacity    = '';
+        portal.classList.add('visible');
+        activeHotspot = hotspot;
+    }
+
+    function hidePortalTooltip() {
+        portal.classList.remove('visible');
+        activeHotspot = null;
+    }
+
+    // Delega eventos em todos os hotspots DENTRO do .mobile-device
+    const mobileDevice = document.querySelector('.mobile-device');
+    if (!mobileDevice) return;
+
+    mobileDevice.addEventListener('mouseover', function (e) {
+        const hotspot = e.target.closest('.hotspot');
+        if (hotspot && hotspot !== activeHotspot) {
+            showPortalTooltip(hotspot);
+        }
+    });
+
+    mobileDevice.addEventListener('mouseout', function (e) {
+        const hotspot = e.target.closest('.hotspot');
+        if (hotspot) {
+            // Só esconde se o mouse saiu do hotspot de vez
+            const related = e.relatedTarget;
+            if (!hotspot.contains(related)) {
+                hidePortalTooltip();
+            }
+        }
+    });
+
+    // Suporte a toque (mobile real): toca uma vez abre, toca fora fecha
+    mobileDevice.addEventListener('touchstart', function (e) {
+        const hotspot = e.target.closest('.hotspot');
+        if (hotspot) {
+            e.preventDefault();
+            if (activeHotspot === hotspot) {
+                hidePortalTooltip();
+            } else {
+                showPortalTooltip(hotspot);
+            }
+        } else if (activeHotspot) {
+            hidePortalTooltip();
+        }
+    }, { passive: false });
+})();
+
+// ============================================================
+// NAVEGAÇÃO POR ABAS — Modal Gestor de Demandas
+// ============================================================
+function initializeDemandasNavigation() {
+    const modal = document.getElementById('modal-mockup-demandas');
+    if (!modal) return;
+
+    const tabs = modal.querySelectorAll('.demandas-tab');
+    const panels = modal.querySelectorAll('.demandas-panel');
+
+    tabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+            const target = tab.dataset.demandasTab;
+
+            // Alterna a classe 'active' nas abas
+            tabs.forEach(t => t.classList.toggle('active', t === tab));
+
+            // Alterna a classe 'active' nos painéis (o CSS cuida do display)
+            panels.forEach(p => {
+                p.classList.toggle('active', p.dataset.demandasPanel === target);
+            });
+
+            // Recarrega os ícones caso a nova aba tenha ícones não renderizados
+            if (window.lucide) {
+                lucide.createIcons();
+            }
+        });
+    });
+}
+
+
+document.addEventListener('DOMContentLoaded', initializeDemandasNavigation);
+
+// ============================================================
+// CONTROLE DE TEMA INTERNO DOS MOCKUPS
+// ============================================================
+function toggleMockupTheme(btn) {
+    // Busca a casca principal de qualquer um dos 3 mockups
+    const mockupContainer = btn.closest('.app-mockup') || 
+                            btn.closest('.mobile-device') || 
+                            btn.closest('.dashboard-mockup');
+    
+    if (mockupContainer) {
+        if (mockupContainer.classList.contains('mockup-theme-dark')) {
+            mockupContainer.classList.remove('mockup-theme-dark');
+            mockupContainer.classList.add('mockup-theme-light');
+        } else {
+            mockupContainer.classList.remove('mockup-theme-light');
+            mockupContainer.classList.add('mockup-theme-dark');
+        }
+    }
+}
